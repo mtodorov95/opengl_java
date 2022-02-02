@@ -1,10 +1,15 @@
 package engineTester;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.RawModel;
 import renderEngine.Renderer;
+import shaders.StaticShader;
+
+import static org.lwjgl.opengl.GL11.GL_VERSION;
+import static org.lwjgl.opengl.GL11.glGetString;
 
 public class MainGameLoop {
 
@@ -21,6 +26,8 @@ public class MainGameLoop {
 
         Loader loader = new Loader();
         Renderer renderer = new Renderer();
+        StaticShader shader = new StaticShader();
+
         // OpenGL expects vertices to be defined counter clockwise
 
         // Rect
@@ -40,11 +47,13 @@ public class MainGameLoop {
 
         while (!DisplayManager.isCloseRequested()){
             renderer.prepare();
-            //
+            shader.start();
             renderer.render(model);
+            shader.stop();
             DisplayManager.updateDisplay();
         }
 
+        shader.cleanUp();
         loader.cleanUp();
         DisplayManager.destroyDisplay();
     }
