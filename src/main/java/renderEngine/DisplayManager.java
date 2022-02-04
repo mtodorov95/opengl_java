@@ -3,6 +3,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
+import java.nio.IntBuffer;
+
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -15,6 +17,15 @@ public class DisplayManager {
     private static final int FPS_CAP = 120;
 
     private static long window;
+    private static int width, height;
+
+    public static int getWidth() {
+        return width;
+    }
+
+    public static int getHeight() {
+        return height;
+    }
 
     public static void createDisplay(){
         // Setup an error callback. The default implementation
@@ -41,10 +52,10 @@ public class DisplayManager {
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-//        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-//            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-//                glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
-//        });
+        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+                glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
+        });
 
         // Get the resolution of the primary monitor
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -54,6 +65,8 @@ public class DisplayManager {
                 (vidmode.width() - WIDTH) / 2,
                 (vidmode.height() - HEIGHT) / 2
         );
+        width = vidmode.width();
+        height = vidmode.height();
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
@@ -62,6 +75,10 @@ public class DisplayManager {
 
         // Make the window visible
         glfwShowWindow(window);
+    }
+
+    public static long getWindow() {
+        return window;
     }
 
     public static boolean isCloseRequested(){

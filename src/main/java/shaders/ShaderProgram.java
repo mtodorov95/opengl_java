@@ -35,7 +35,6 @@ public abstract class ShaderProgram {
     protected abstract void getAllUniformLocations();
 
     protected int getUniformLocation(String uniformName){
-        // Returns a uniform var from the shader code
         return GL20.glGetUniformLocation(programID, uniformName);
     }
 
@@ -77,9 +76,8 @@ public abstract class ShaderProgram {
     }
 
     protected void loadMatrixToUniform(int location, Matrix4f matrix){
-        // Store in buffer
+        // Store in buffer. Does not increment buffer offset. No need to flip().
         matrix.get(matrixBuffer);
-        matrixBuffer.flip();
         GL20.glUniformMatrix4fv(location, false, matrixBuffer);
     }
 

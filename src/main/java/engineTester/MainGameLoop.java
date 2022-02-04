@@ -1,6 +1,9 @@
 package engineTester;
 
+import entities.Camera;
+import entities.Entity;
 import models.TexturedModel;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
@@ -23,8 +26,8 @@ public class MainGameLoop {
         GL.createCapabilities();
 
         Loader loader = new Loader();
-        Renderer renderer = new Renderer();
         StaticShader shader = new StaticShader();
+        Renderer renderer = new Renderer(shader);
 
         // OpenGL expects vertices to be defined counter clockwise
 
@@ -53,10 +56,18 @@ public class MainGameLoop {
         TextureModel texture = new TextureModel(loader.loadTexture("src/main/resources/res/tile.png"));
         TexturedModel texturedModel = new TexturedModel(model, texture);
 
+        // move to the left
+        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-1), 0,0,0,1);
+
+        Camera camera = new Camera(DisplayManager.getWindow());
+
         while (!DisplayManager.isCloseRequested()){
+            //entity.increasePosition(0, 0,-0.1f);
+            camera.move();
             renderer.prepare();
             shader.start();
-            renderer.render(texturedModel);
+            shader.loadViewMatrix(camera);
+            renderer.render(entity, shader);
             shader.stop();
             DisplayManager.updateDisplay();
         }
