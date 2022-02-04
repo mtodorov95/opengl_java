@@ -69,8 +69,8 @@ public class DisplayManager {
     }
 
     public static void updateDisplay(){
-        glfwSwapBuffers(window); // swap the color buffers
-
+        // swap the buffers
+        glfwSwapBuffers(window);
         // Poll for window events. The key callback above will only be
         // invoked during this call.
         glfwPollEvents();

@@ -1,15 +1,13 @@
 package engineTester;
 
-import org.lwjgl.glfw.GLFW;
+import models.TexturedModel;
 import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import renderEngine.RawModel;
+import models.RawModel;
 import renderEngine.Renderer;
 import shaders.StaticShader;
-
-import static org.lwjgl.opengl.GL11.GL_VERSION;
-import static org.lwjgl.opengl.GL11.glGetString;
+import textures.TextureModel;
 
 public class MainGameLoop {
 
@@ -43,12 +41,22 @@ public class MainGameLoop {
                 3,1,2 // bottom right tri (v3,v1,v2)
         };
 
-        RawModel model = loader.loadToVAO(vertices, indices);
+        // u, v coordinates. From TL(0,0) to BR(1,1)
+        float[] textureCoords = {
+                0,0, //v0
+                0,1, //v1
+                1,1, //v2
+                1,0, //v3
+        };
+
+        RawModel model = loader.loadToVAO(vertices,textureCoords,indices);
+        TextureModel texture = new TextureModel(loader.loadTexture("src/main/resources/res/tile.png"));
+        TexturedModel texturedModel = new TexturedModel(model, texture);
 
         while (!DisplayManager.isCloseRequested()){
             renderer.prepare();
             shader.start();
-            renderer.render(model);
+            renderer.render(texturedModel);
             shader.stop();
             DisplayManager.updateDisplay();
         }

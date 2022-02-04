@@ -1,11 +1,15 @@
 package renderEngine;
 
+import models.RawModel;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -15,11 +19,15 @@ public class Loader {
 
     private List<Integer> vaos = new ArrayList<>();
     private List<Integer> vbos = new ArrayList<>();
+    private List<Integer> textures = new ArrayList<>();
 
-    public RawModel loadToVAO(float[] positions, int[] indices){
+    public RawModel loadToVAO(float[] positions,float[] textureCoords, int[] indices){
         int vaoID = createVAO();
         bindIndicesBuffer(indices);
-        storeDataInAttributeList(0, positions);
+        // pos=vector3 => coordinateSize = 3
+        storeDataInAttributeList(0, 3,positions);
+        // textureCoords=vector2 => coordinateSize = 2
+        storeDataInAttributeList(1, 2,textureCoords);
         unbindVAO();
         return new RawModel(vaoID, indices.length);
     }
@@ -31,12 +39,42 @@ public class Loader {
         return vaoID;
     }
 
-    private void storeDataInAttributeList(int attributeNumber, float[] data){
+    public int loadTexture(String file){
+        int width, height;
+        ByteBuffer byteBuffer;
+        try {
+            MemoryStack stack = MemoryStack.stackPush();
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            IntBuffer c = stack.mallocInt(1);
+
+            byteBuffer = STBImage.stbi_load(file, w, h, c, 4);
+            if (byteBuffer == null){
+                throw new Exception("Unable to load file: " + file);
+            }
+            width = w.get();
+            height = h.get();
+
+            int id = GL11.glGenTextures();
+            textures.add(id);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+            GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, byteBuffer);
+            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+            STBImage.stbi_image_free(byteBuffer);
+            return id;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private void storeDataInAttributeList(int attributeNumber,int coordinatesSize, float[] data){
         int vboID = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
         FloatBuffer buffer = storeDataInFloatBuffer(data);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
-        GL20.glVertexAttribPointer(attributeNumber, 3, GL11.GL_FLOAT, false, 0,0);
+        GL20.glVertexAttribPointer(attributeNumber, coordinatesSize, GL11.GL_FLOAT, false, 0,0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         vbos.add(vboID);
     }
@@ -75,6 +113,10 @@ public class Loader {
 
         for (int vbo:vbos){
             GL15.glDeleteBuffers(vbo);
+        }
+
+        for (int texture:textures){
+            GL15.glDeleteTextures(texture);
         }
     }
 }
