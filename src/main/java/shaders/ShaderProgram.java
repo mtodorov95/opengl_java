@@ -6,6 +6,9 @@ import org.lwjgl.opengl.GL20;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public abstract class ShaderProgram {
 
@@ -48,22 +51,33 @@ public abstract class ShaderProgram {
     protected abstract void bindAttributes();
 
     private static int loadShader(String file, int type){
-        StringBuilder shaderSource = new StringBuilder();
+        //StringBuilder shaderSource = new StringBuilder();
+        String result = "";
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null){
-                shaderSource.append(line).append("\n");
-            }
-            reader.close();
-        } catch (IOException e){
+        try{
+            InputStream in = ShaderProgram.class.getClassLoader().getResourceAsStream(file);
+            Scanner scanner = new Scanner(in, StandardCharsets.UTF_8.name());
+            result = scanner.useDelimiter("\\A").next();
+        }catch (Exception e){
             e.printStackTrace();
             System.exit(-1);
         }
 
+//        try {
+//            BufferedReader reader = new BufferedReader(new FileReader(file));
+//            String line;
+//            while ((line = reader.readLine()) != null){
+//                shaderSource.append(line).append("\n");
+//            }
+//            reader.close();
+//        } catch (IOException e){
+//            e.printStackTrace();
+//            System.exit(-1);
+//        }
+
         int shaderID = GL20.glCreateShader(type);
-        GL20.glShaderSource(shaderID, shaderSource);
+        //GL20.glShaderSource(shaderID, shaderSource);
+        GL20.glShaderSource(shaderID, result);
         GL20.glCompileShader(shaderID);
 
         if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE){
