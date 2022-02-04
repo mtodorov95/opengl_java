@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import models.RawModel;
+import renderEngine.OBJLoader;
 import renderEngine.Renderer;
 import shaders.StaticShader;
 import textures.TextureModel;
@@ -29,40 +30,17 @@ public class MainGameLoop {
         StaticShader shader = new StaticShader();
         Renderer renderer = new Renderer(shader);
 
-        // OpenGL expects vertices to be defined counter clockwise
-
-        // Rect
-        float[] vertices = {
-                -0.5f, 0.5f, 0f, //v0
-                -0.5f, -0.5f, 0f, //v1
-                0.5f, -0.5f, 0f, //v2
-                0.5f, 0.5f, 0f, //v3
-        };
-
-        int[] indices = {
-                0,1,3, // top left tri (v0,v1,v3)
-                3,1,2 // bottom right tri (v3,v1,v2)
-        };
-
-        // u, v coordinates. From TL(0,0) to BR(1,1)
-        float[] textureCoords = {
-                0,0, //v0
-                0,1, //v1
-                1,1, //v2
-                1,0, //v3
-        };
-
-        RawModel model = loader.loadToVAO(vertices,textureCoords,indices);
-        TextureModel texture = new TextureModel(loader.loadTexture("src/main/resources/res/tile.png"));
+        RawModel model = OBJLoader.loadObjModel("src/main/resources/res/stall/stall.obj", loader);
+        TextureModel texture = new TextureModel(loader.loadTexture("src/main/resources/res/stall/stallTexture.png"));
         TexturedModel texturedModel = new TexturedModel(model, texture);
 
         // move to the left
-        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-1), 0,0,0,1);
+        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-50), 0,0,0,1);
 
         Camera camera = new Camera(DisplayManager.getWindow());
 
         while (!DisplayManager.isCloseRequested()){
-            //entity.increasePosition(0, 0,-0.1f);
+            entity.increaseRotation(0, 1,0);
             camera.move();
             renderer.prepare();
             shader.start();
