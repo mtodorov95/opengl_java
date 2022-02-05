@@ -2,12 +2,13 @@ package engineTester;
 
 import entities.Camera;
 import entities.Entity;
+import entities.Light;
+import models.RawModel;
 import models.TexturedModel;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import models.RawModel;
 import renderEngine.OBJLoader;
 import renderEngine.Renderer;
 import shaders.StaticShader;
@@ -35,15 +36,19 @@ public class MainGameLoop {
         TexturedModel texturedModel = new TexturedModel(model, texture);
 
         // move to the left
-        Entity entity = new Entity(texturedModel, new Vector3f(0,0,-50), 0,0,0,1);
+        Entity entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 0, 0, 1);
+
+        // light source
+        Light light = new Light(new Vector3f(0, 0, -20), new Vector3f(1, 1, 1));
 
         Camera camera = new Camera(DisplayManager.getWindow());
 
-        while (!DisplayManager.isCloseRequested()){
-            entity.increaseRotation(0, 1,0);
+        while (!DisplayManager.isCloseRequested()) {
+            entity.increaseRotation(0, 1, 0);
             camera.move();
             renderer.prepare();
             shader.start();
+            shader.loadLight(light);
             shader.loadViewMatrix(camera);
             renderer.render(entity, shader);
             shader.stop();

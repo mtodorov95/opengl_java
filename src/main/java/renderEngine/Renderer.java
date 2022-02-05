@@ -25,19 +25,23 @@ public class Renderer {
         shader.stop();
     }
 
-    public void prepare(){
+    public void prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glClearColor(0, 0, 0,0);
+        GL11.glClearColor(0, 0, 0, 0);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
 
-    public void render(Entity entity, StaticShader shader){
+    public void render(Entity entity, StaticShader shader) {
         TexturedModel model = entity.getModel();
         RawModel rawModel = model.getRawModel();
 
         GL30.glBindVertexArray(rawModel.getVaoID());
+        // position
         GL20.glEnableVertexAttribArray(0);
+        // texture
         GL20.glEnableVertexAttribArray(1);
+        // normal
+        GL20.glEnableVertexAttribArray(2);
 
         // Load the entity transformation matrix to the shader.
         // Used to render an N number of entities from one VAO, instead of creating new ones.
@@ -47,7 +51,7 @@ public class Renderer {
                 entity.getRotY(),
                 entity.getRotZ(),
                 entity.getScale()
-                );
+        );
         shader.loadTransformationMatrix(transformationMatrix);
 
         // Tells opengl which texture to use
@@ -56,10 +60,11 @@ public class Renderer {
         GL11.glDrawElements(GL11.GL_TRIANGLES, rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
+        GL20.glDisableVertexAttribArray(2);
         GL30.glBindVertexArray(0);
     }
 
-    private void createProjectionMatrix(){
+    private void createProjectionMatrix() {
         float aspectRatio = (float) DisplayManager.getWidth() / (float) DisplayManager.getHeight();
         float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
         float x_scale = y_scale / aspectRatio;

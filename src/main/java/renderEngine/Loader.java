@@ -21,25 +21,27 @@ public class Loader {
     private List<Integer> vbos = new ArrayList<>();
     private List<Integer> textures = new ArrayList<>();
 
-    public RawModel loadToVAO(float[] positions,float[] textureCoords, int[] indices){
+    public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
         int vaoID = createVAO();
         bindIndicesBuffer(indices);
         // pos=vector3 => coordinateSize = 3
-        storeDataInAttributeList(0, 3,positions);
+        storeDataInAttributeList(0, 3, positions);
         // textureCoords=vector2 => coordinateSize = 2
-        storeDataInAttributeList(1, 2,textureCoords);
+        storeDataInAttributeList(1, 2, textureCoords);
+        // normals. Vectors perpendicular to the surface at each vertex. Used for lighting
+        storeDataInAttributeList(2, 3, normals);
         unbindVAO();
         return new RawModel(vaoID, indices.length);
     }
 
-    private int createVAO(){
+    private int createVAO() {
         int vaoID = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vaoID);
         vaos.add(vaoID);
         return vaoID;
     }
 
-    public int loadTexture(String file){
+    public int loadTexture(String file) {
         int width, height;
         ByteBuffer byteBuffer;
         try {
@@ -49,7 +51,7 @@ public class Loader {
             IntBuffer c = stack.mallocInt(1);
 
             byteBuffer = STBImage.stbi_load(file, w, h, c, 4);
-            if (byteBuffer == null){
+            if (byteBuffer == null) {
                 throw new Exception("Unable to load file: " + file);
             }
             width = w.get();
@@ -63,27 +65,27 @@ public class Loader {
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
             STBImage.stbi_image_free(byteBuffer);
             return id;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return -1;
     }
 
-    private void storeDataInAttributeList(int attributeNumber,int coordinatesSize, float[] data){
+    private void storeDataInAttributeList(int attributeNumber, int coordinatesSize, float[] data) {
         int vboID = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
         FloatBuffer buffer = storeDataInFloatBuffer(data);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
-        GL20.glVertexAttribPointer(attributeNumber, coordinatesSize, GL11.GL_FLOAT, false, 0,0);
+        GL20.glVertexAttribPointer(attributeNumber, coordinatesSize, GL11.GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         vbos.add(vboID);
     }
 
-    private void unbindVAO(){
+    private void unbindVAO() {
         GL30.glBindVertexArray(0);
     }
 
-    private void bindIndicesBuffer(int[] indices){
+    private void bindIndicesBuffer(int[] indices) {
         int vboID = GL15.glGenBuffers();
         vbos.add(vboID);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);
@@ -91,14 +93,14 @@ public class Loader {
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
     }
 
-    private IntBuffer storeDataInIntBuffer(int[] data){
+    private IntBuffer storeDataInIntBuffer(int[] data) {
         IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
         buffer.put(data);
         buffer.flip();
         return buffer;
     }
 
-    private FloatBuffer storeDataInFloatBuffer(float[] data){
+    private FloatBuffer storeDataInFloatBuffer(float[] data) {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
         buffer.put(data);
         // Flip to prep for reading
@@ -106,16 +108,16 @@ public class Loader {
         return buffer;
     }
 
-    public void cleanUp(){
-        for (int vao:vaos){
+    public void cleanUp() {
+        for (int vao : vaos) {
             GL30.glDeleteVertexArrays(vao);
         }
 
-        for (int vbo:vbos){
+        for (int vbo : vbos) {
             GL15.glDeleteBuffers(vbo);
         }
 
-        for (int texture:textures){
+        for (int texture : textures) {
             GL15.glDeleteTextures(texture);
         }
     }
