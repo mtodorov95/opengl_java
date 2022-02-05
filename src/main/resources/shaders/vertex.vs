@@ -10,6 +10,8 @@ out vec2 pass_textureCoords;
 out vec3 surfaceNormal;
 // vector from the vertex to the light source
 out vec3 toLightVector;
+// vector to the camera
+out vec3 toCameraVector;
 
 // Uniform vars. Used to dynamically interact with the shader code from Java(things like position, lighting, fog,...)
 uniform mat4 transformationMatrix;
@@ -26,4 +28,6 @@ void main(){
 
     surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
     toLightVector = lightPosition - worldPosition.xyz;
+    // the view already contains the opposite of the camera position
+    toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 }

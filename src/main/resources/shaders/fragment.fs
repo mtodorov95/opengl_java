@@ -3,11 +3,14 @@
 in vec2 pass_textureCoords;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
+in vec3 toCameraVector;
 
 out vec4 fragColor;
 
 uniform sampler2D textureSampler;
 uniform vec3 lightColor;
+uniform float shineDamper;
+uniform float reflectivity;
 
 void main(){
     vec3 unitNormal = normalize(surfaceNormal);
@@ -20,5 +23,18 @@ void main(){
     // how much light depending on brightness
     vec3 diffuse = brightness * lightColor;
 
-    fragColor = vec4(diffuse, 1.0) * texture(textureSampler, pass_textureCoords);
+    vec3 unitVectorToCamera = normalize(toCameraVector);
+    // opposite of the toLightVec
+    vec3 lightDirection = -unitLightVector;
+    // The reflected light comming from the surface
+    vec3 reflectedLightDirection = reflect(lightDirection, unitNormal);
+    // How close is the reflected light direction to where the camera is looking.
+    float specularFactor = dot(reflectedLightDirection, toCameraVector);
+    specularFactor = max(specularFactor, 0.0);
+    // how much to damp the reflected light
+    float dampedFactor = pow(specularFactor, shineDamper);
+    // The final specular(reflected) light, taking the color of the light source into account
+    vec3 finalSpecular = dampedFactor * lightColor;
+
+    fragColor = vec4(diffuse, 1.0) * texture(textureSampler, pass_textureCoords) + vec4(finalSpecular, 1.0);
 }

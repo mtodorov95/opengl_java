@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import shaders.StaticShader;
+import textures.TextureModel;
 import tools.Maths;
 
 public class Renderer {
@@ -53,7 +54,10 @@ public class Renderer {
                 entity.getScale()
         );
         shader.loadTransformationMatrix(transformationMatrix);
-
+        //
+        TextureModel texture = model.getTexture();
+        shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+        //
         // Tells opengl which texture to use
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());

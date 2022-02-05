@@ -33,13 +33,16 @@ public class MainGameLoop {
 
         RawModel model = OBJLoader.loadObjModel("src/main/resources/res/stall/stall.obj", loader);
         TextureModel texture = new TextureModel(loader.loadTexture("src/main/resources/res/stall/stallTexture.png"));
+        texture.setShineDamper(12);
+        texture.setReflectivity(0.001f);
+
         TexturedModel texturedModel = new TexturedModel(model, texture);
 
         // move to the left
         Entity entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 0, 0, 1);
 
         // light source
-        Light light = new Light(new Vector3f(0, 0, -20), new Vector3f(1, 1, 1));
+        Light light = new Light(new Vector3f(10, 0, -20), new Vector3f(1, 1, 1));
 
         Camera camera = new Camera(DisplayManager.getWindow());
 
