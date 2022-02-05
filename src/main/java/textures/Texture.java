@@ -1,13 +1,13 @@
 package textures;
 
-public class TextureModel {
+public class Texture {
 
     private int textureID;
 
     private float shineDamper = 1;
     private float reflectivity = 0;
 
-    public TextureModel(int textureID) {
+    public Texture(int textureID) {
         this.textureID = textureID;
     }
 

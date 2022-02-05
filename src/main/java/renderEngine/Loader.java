@@ -50,9 +50,10 @@ public class Loader {
             IntBuffer h = stack.mallocInt(1);
             IntBuffer c = stack.mallocInt(1);
 
-            byteBuffer = STBImage.stbi_load(file, w, h, c, 4);
+            String fullPath = "src/main/resources/res/" + file;
+            byteBuffer = STBImage.stbi_load(fullPath, w, h, c, 4);
             if (byteBuffer == null) {
-                throw new Exception("Unable to load file: " + file);
+                throw new Exception("Unable to load file: " + fullPath);
             }
             width = w.get();
             height = h.get();

@@ -19,16 +19,22 @@ public class Camera {
     public void move() {
         GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
             if (key == GLFW.GLFW_KEY_W) {
-                position.y += 0.25f;
+                position.z -= 0.45f;
             }
             if (key == GLFW.GLFW_KEY_D) {
-                position.x += 0.25f;
+                position.x += 0.75f;
             }
             if (key == GLFW.GLFW_KEY_A) {
-                position.x -= 0.25f;
+                position.x -= 0.75f;
             }
             if (key == GLFW.GLFW_KEY_S) {
-                position.y -= 0.25f;
+                position.z += 0.45f;
+            }
+            if (key == GLFW.GLFW_KEY_SPACE) {
+                position.y += 0.45f;
+            }
+            if (key == GLFW.GLFW_KEY_LEFT_SHIFT) {
+                position.y -= 0.45f;
             }
         });
     }

@@ -9,37 +9,22 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import shaders.StaticShader;
-import textures.TextureModel;
+import textures.Texture;
 import tools.Maths;
 
 import java.util.List;
 import java.util.Map;
 
-public class Renderer {
-    private static final float FOV = 70;
-    private static final float NEAR_PLANE = 0.1f;
-    private static final float FAR_PLANE = 1000.0f; // view distance
+public class EntityRenderer {
 
-    private Matrix4f projectionMatrix;
     private StaticShader shader;
 
-    public Renderer(StaticShader shader) {
+    public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix) {
         this.shader = shader;
-        // Tells openGL to not render certain faces.
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        // Stops rendering the ones facing back - ones that can't be seen
-        GL11.glCullFace(GL11.GL_BACK);
 
-        createProjectionMatrix();
         shader.start();
         shader.loadProjectionMatrix(projectionMatrix);
         shader.stop();
-    }
-
-    public void prepare() {
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glClearColor(0, 0, 0, 0);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
 
     public void render(Map<TexturedModel, List<Entity>> entities) {
@@ -67,7 +52,7 @@ public class Renderer {
         // normal
         GL20.glEnableVertexAttribArray(2);
         // Load the shine for the texture
-        TextureModel texture = model.getTexture();
+        Texture texture = model.getTexture();
         shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
         // Tells opengl which texture to use
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -92,20 +77,5 @@ public class Renderer {
         GL20.glDisableVertexAttribArray(1);
         GL20.glDisableVertexAttribArray(2);
         GL30.glBindVertexArray(0);
-    }
-
-    private void createProjectionMatrix() {
-        float aspectRatio = (float) DisplayManager.getWidth() / (float) DisplayManager.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
-        float frustum_length = FAR_PLANE - NEAR_PLANE;
-
-        projectionMatrix = new Matrix4f();
-        projectionMatrix.m00(x_scale);
-        projectionMatrix.m11(y_scale);
-        projectionMatrix.m22(-((FAR_PLANE + NEAR_PLANE) / frustum_length));
-        projectionMatrix.m23(-1);
-        projectionMatrix.m32(-((2 * NEAR_PLANE * FAR_PLANE) / frustum_length));
-        projectionMatrix.m33(0);
     }
 }

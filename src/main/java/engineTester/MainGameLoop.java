@@ -11,7 +11,8 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import renderEngine.OBJLoader;
-import textures.TextureModel;
+import terrain.Terrain;
+import textures.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +33,13 @@ public class MainGameLoop {
         Loader loader = new Loader();
 
         RawModel model = OBJLoader.loadObjModel("src/main/resources/res/stall/stall.obj", loader);
-        TextureModel texture = new TextureModel(loader.loadTexture("src/main/resources/res/stall/stallTexture.png"));
+        Texture texture = new Texture(loader.loadTexture("stall/stallTexture.png"));
         texture.setShineDamper(50);
         texture.setReflectivity(0.001f);
 
         TexturedModel texturedModel = new TexturedModel(model, texture);
 
-        //
+        // entities
         Entity stall = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 160, 0, 1);
         Entity stall2 = new Entity(texturedModel, new Vector3f(-20, 0, -55), 0, 120, 0, 1);
         Entity stall3 = new Entity(texturedModel, new Vector3f(40, 0, -35), 0, 180, 0, 1);
@@ -47,7 +48,12 @@ public class MainGameLoop {
         entities.add(stall);
         entities.add(stall2);
         entities.add(stall3);
-        //
+
+        // terrain
+        Terrain terrain = new Terrain(0, 0, loader, new Texture(loader.loadTexture("grass.png")));
+        Terrain terrain2 = new Terrain(1, 0, loader, new Texture(loader.loadTexture("grass.png")));
+
+
         // light source
         Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
 
@@ -58,6 +64,10 @@ public class MainGameLoop {
 
         while (!DisplayManager.isCloseRequested()) {
             camera.move();
+            //
+            renderer.processTerrain(terrain);
+            renderer.processTerrain(terrain2);
+            //
             // Process all the entities
             for (Entity entity : entities) {
                 renderer.processEntity(entity);
