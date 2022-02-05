@@ -3,6 +3,7 @@ package shaders;
 import entities.Camera;
 import entities.Light;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import tools.Maths;
 
 public class TerrainShader extends ShaderProgram {
@@ -16,6 +17,7 @@ public class TerrainShader extends ShaderProgram {
     private int lightColorLocation;
     private int shineDamperLocation;
     private int reflectivityLocation;
+    private int skyColorLocation;
 
     public TerrainShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -30,6 +32,7 @@ public class TerrainShader extends ShaderProgram {
         lightColorLocation = super.getUniformLocation("lightColor");
         shineDamperLocation = super.getUniformLocation("shineDamper");
         reflectivityLocation = super.getUniformLocation("reflectivity");
+        skyColorLocation = super.getUniformLocation("skyColor");
     }
 
     @Override
@@ -37,6 +40,10 @@ public class TerrainShader extends ShaderProgram {
         super.bindAttribute(0, "position");
         super.bindAttribute(1, "textureCoords");
         super.bindAttribute(2, "normal");
+    }
+
+    public void loadSkyColor(Vector3f rgb) {
+        super.loadVectorToUniform(skyColorLocation, rgb);
     }
 
     public void loadShineVariables(float damper, float reflectivity) {

@@ -5,12 +5,13 @@ import entities.Entity;
 import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
+import objLoader.ModelData;
+import objLoader.OBJFileLoader;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
-import renderEngine.OBJLoader;
 import terrain.Terrain;
 import textures.Texture;
 
@@ -31,28 +32,32 @@ public class MainGameLoop {
         GL.createCapabilities();
 
         Loader loader = new Loader();
-
+        ModelData data;
         // Stall
-        RawModel stallModel = OBJLoader.loadObjModel("stall/stall.obj", loader);
+        data = OBJFileLoader.loadOBJ("stall/stall");
+        RawModel stallModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
         Texture stallTexture = new Texture(loader.loadTexture("stall/stallTexture.png"));
         stallTexture.setShineDamper(50);
         stallTexture.setReflectivity(0.001f);
         TexturedModel textureStallModel = new TexturedModel(stallModel, stallTexture);
         // Trees
-        RawModel treeModel = OBJLoader.loadObjModel("tree/tree.obj", loader);
+        data = OBJFileLoader.loadOBJ("tree/tree");
+        RawModel treeModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
         Texture treeTexture = new Texture(loader.loadTexture("tree/tree.png"));
         stallTexture.setShineDamper(10);
         stallTexture.setReflectivity(0.001f);
         TexturedModel textureTreeModel = new TexturedModel(treeModel, treeTexture);
         // Fern
-        RawModel fernModel = OBJLoader.loadObjModel("fern/fern.obj", loader);
+        data = OBJFileLoader.loadOBJ("fern/fern");
+        RawModel fernModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
         Texture fernTexture = new Texture(loader.loadTexture("fern/fern.png"));
         fernTexture.setHasTransparency(true);
         stallTexture.setShineDamper(10);
         stallTexture.setReflectivity(0.001f);
         TexturedModel textureFernModel = new TexturedModel(fernModel, fernTexture);
         // Grasses
-        RawModel grassModel = OBJLoader.loadObjModel("grass/grassModel.obj", loader);
+        data = OBJFileLoader.loadOBJ("grass/grassModel");
+        RawModel grassModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
         Texture grassTexture = new Texture(loader.loadTexture("grass/grassTexture.png"));
         grassTexture.setHasTransparency(true);
         grassTexture.setUseFakeLighting(true);
@@ -71,7 +76,7 @@ public class MainGameLoop {
         entities.add(stall2);
         entities.add(stall3);
 
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 60; i++) {
             float min = -400;
             float x = (float) (Math.random() * 800) + min;
             float z = (float) (Math.random() * 800) + min;
@@ -79,7 +84,7 @@ public class MainGameLoop {
             entities.add(tree);
         }
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 200; i++) {
             float min = -400;
             float x = (float) (Math.random() * 800) + min;
             float z = (float) (Math.random() * 800) + min;
@@ -87,7 +92,7 @@ public class MainGameLoop {
             entities.add(fern);
         }
 
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 500; i++) {
             float min = -400;
             float x = (float) (Math.random() * 800) + min;
             float z = (float) (Math.random() * 800) + min;

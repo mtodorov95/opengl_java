@@ -12,6 +12,8 @@ out vec3 surfaceNormal;
 out vec3 toLightVector;
 // vector to the camera
 out vec3 toCameraVector;
+//
+out float visibility;
 
 // Uniform vars. Used to dynamically interact with the shader code from Java(things like position, lighting, fog,...)
 uniform mat4 transformationMatrix;
@@ -21,11 +23,17 @@ uniform vec3 lightPosition;
 
 uniform float useFakeLighting;
 
+// Fog
+const float density = 0.003;
+const float gradient = 5.0;
+
 void main(){
     // actual position in the world
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+    //
+    vec4 positionRelativeToCamera = viewMatrix * worldPosition;
 
-    gl_Position = projectionMatrix * viewMatrix * worldPosition;
+    gl_Position = projectionMatrix * positionRelativeToCamera;
     pass_textureCoords = textureCoords;
 
     // if we are faking lighting point the normal vec straight up
@@ -38,4 +46,8 @@ void main(){
     toLightVector = lightPosition - worldPosition.xyz;
     // the view already contains the opposite of the camera position
     toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
+    //
+    float distance = length(positionRelativeToCamera.xyz);
+    visibility = exp(-pow((distance*density), gradient));
+    visibility = clamp(visibility, 0.0, 1.0);
 }

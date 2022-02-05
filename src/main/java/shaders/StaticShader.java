@@ -3,6 +3,7 @@ package shaders;
 import entities.Camera;
 import entities.Light;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import tools.Maths;
 
 public class StaticShader extends ShaderProgram {
@@ -17,6 +18,7 @@ public class StaticShader extends ShaderProgram {
     private int shineDamperLocation;
     private int reflectivityLocation;
     private int useFakeLightingLocation;
+    private int skyColorLocation;
 
     public StaticShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -32,6 +34,7 @@ public class StaticShader extends ShaderProgram {
         shineDamperLocation = super.getUniformLocation("shineDamper");
         reflectivityLocation = super.getUniformLocation("reflectivity");
         useFakeLightingLocation = super.getUniformLocation("useFakeLighting");
+        skyColorLocation = super.getUniformLocation("skyColor");
     }
 
     @Override
@@ -39,6 +42,10 @@ public class StaticShader extends ShaderProgram {
         super.bindAttribute(0, "position");
         super.bindAttribute(1, "textureCoords");
         super.bindAttribute(2, "normal");
+    }
+
+    public void loadSkyColor(Vector3f rgb) {
+        super.loadVectorToUniform(skyColorLocation, rgb);
     }
 
     public void loadFakeLightingVar(boolean useFake) {
