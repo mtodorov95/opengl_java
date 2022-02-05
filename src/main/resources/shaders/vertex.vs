@@ -19,6 +19,8 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
 
+uniform float useFakeLighting;
+
 void main(){
     // actual position in the world
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
@@ -26,7 +28,13 @@ void main(){
     gl_Position = projectionMatrix * viewMatrix * worldPosition;
     pass_textureCoords = textureCoords;
 
-    surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
+    // if we are faking lighting point the normal vec straight up
+    vec3 actualNormal = normal;
+    if (useFakeLighting > 0.5){
+        actualNormal = vec3(0.0, 1.0, 0.0);
+    }
+
+    surfaceNormal = (transformationMatrix * vec4(actualNormal, 0.0)).xyz;
     toLightVector = lightPosition - worldPosition.xyz;
     // the view already contains the opposite of the camera position
     toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;

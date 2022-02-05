@@ -37,5 +37,12 @@ void main(){
     // The final specular(reflected) light, taking the color of the light source into account
     vec3 finalSpecular = dampedFactor * reflectivity * lightColor;
 
-    fragColor = vec4(diffuse, 1.0) * texture(textureSampler, pass_textureCoords) + vec4(finalSpecular, 1.0);
+    vec4 textureColor = texture(textureSampler, pass_textureCoords);
+    // Easy check to see if the texture is transparent
+    // if so don't render it at all
+    if (textureColor.a < 0.5){
+        discard;
+    }
+
+    fragColor = vec4(diffuse, 1.0) * textureColor + vec4(finalSpecular, 1.0);
 }

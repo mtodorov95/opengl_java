@@ -35,16 +35,23 @@ public class MasterRenderer {
     private List<Terrain> terrains = new ArrayList<>();
 
     public MasterRenderer() {
-        // Tells openGL to not render certain faces.
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        // Stops rendering the ones facing back - ones that can't be seen
-        GL11.glCullFace(GL11.GL_BACK);
-
+        enableBackFaceCulling();
         createProjectionMatrix();
         staticShader = new StaticShader();
         terrainShader = new TerrainShader();
         entityRenderer = new EntityRenderer(staticShader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+    }
+
+    public static void enableBackFaceCulling() {
+        // Tells openGL to not render certain faces.
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        // Stops rendering the ones facing back - ones that can't be seen
+        GL11.glCullFace(GL11.GL_BACK);
+    }
+
+    public static void disableCulling() {
+        GL11.glDisable(GL11.GL_CULL_FACE);
     }
 
     public void render(Light sun, Camera camera) {

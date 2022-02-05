@@ -13,9 +13,10 @@ import java.util.List;
 
 public class OBJLoader {
     public static RawModel loadObjModel(String file, Loader loader) {
+        String fullPath = "src/main/resources/res/" + file;
         FileReader fr = null;
         try {
-            fr = new FileReader(new File(file));
+            fr = new FileReader(new File(fullPath));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
