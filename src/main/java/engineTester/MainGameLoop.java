@@ -9,10 +9,12 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
+import renderEngine.MasterRenderer;
 import renderEngine.OBJLoader;
-import renderEngine.Renderer;
-import shaders.StaticShader;
 import textures.TextureModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainGameLoop {
 
@@ -28,37 +30,44 @@ public class MainGameLoop {
         GL.createCapabilities();
 
         Loader loader = new Loader();
-        StaticShader shader = new StaticShader();
-        Renderer renderer = new Renderer(shader);
 
         RawModel model = OBJLoader.loadObjModel("src/main/resources/res/stall/stall.obj", loader);
         TextureModel texture = new TextureModel(loader.loadTexture("src/main/resources/res/stall/stallTexture.png"));
-        texture.setShineDamper(12);
+        texture.setShineDamper(50);
         texture.setReflectivity(0.001f);
 
         TexturedModel texturedModel = new TexturedModel(model, texture);
 
-        // move to the left
-        Entity entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 0, 0, 1);
+        //
+        Entity stall = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 160, 0, 1);
+        Entity stall2 = new Entity(texturedModel, new Vector3f(-20, 0, -55), 0, 120, 0, 1);
+        Entity stall3 = new Entity(texturedModel, new Vector3f(40, 0, -35), 0, 180, 0, 1);
 
+        List<Entity> entities = new ArrayList<>();
+        entities.add(stall);
+        entities.add(stall2);
+        entities.add(stall3);
+        //
         // light source
-        Light light = new Light(new Vector3f(10, 0, -20), new Vector3f(1, 1, 1));
+        Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
 
         Camera camera = new Camera(DisplayManager.getWindow());
 
+        MasterRenderer renderer = new MasterRenderer();
+
+
         while (!DisplayManager.isCloseRequested()) {
-            entity.increaseRotation(0, 1, 0);
             camera.move();
-            renderer.prepare();
-            shader.start();
-            shader.loadLight(light);
-            shader.loadViewMatrix(camera);
-            renderer.render(entity, shader);
-            shader.stop();
+            // Process all the entities
+            for (Entity entity : entities) {
+                renderer.processEntity(entity);
+            }
+            //
+            renderer.render(light, camera);
             DisplayManager.updateDisplay();
         }
 
-        shader.cleanUp();
+        renderer.cleanup();
         loader.cleanUp();
         DisplayManager.destroyDisplay();
     }

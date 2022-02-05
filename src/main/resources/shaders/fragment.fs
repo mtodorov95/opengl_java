@@ -19,7 +19,8 @@ void main(){
     // The more similar(closer to 1.0) the closer the vertex is to the light source
     // a.k.a. needs to be brighter.
     float nDot1 = dot(unitNormal, unitLightVector);
-    float brightness = max(nDot1, 0.0);
+    // Making the min 0.15 adds a bit of ambient lighting
+    float brightness = max(nDot1, 0.15);
     // how much light depending on brightness
     vec3 diffuse = brightness * lightColor;
 
@@ -29,12 +30,12 @@ void main(){
     // The reflected light comming from the surface
     vec3 reflectedLightDirection = reflect(lightDirection, unitNormal);
     // How close is the reflected light direction to where the camera is looking.
-    float specularFactor = dot(reflectedLightDirection, toCameraVector);
+    float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
     specularFactor = max(specularFactor, 0.0);
     // how much to damp the reflected light
     float dampedFactor = pow(specularFactor, shineDamper);
     // The final specular(reflected) light, taking the color of the light source into account
-    vec3 finalSpecular = dampedFactor * lightColor;
+    vec3 finalSpecular = dampedFactor * reflectivity * lightColor;
 
     fragColor = vec4(diffuse, 1.0) * texture(textureSampler, pass_textureCoords) + vec4(finalSpecular, 1.0);
 }
