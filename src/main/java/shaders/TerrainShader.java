@@ -18,6 +18,11 @@ public class TerrainShader extends ShaderProgram {
     private int shineDamperLocation;
     private int reflectivityLocation;
     private int skyColorLocation;
+    private int grassTerrainLocation;
+    private int mudTerrainLocation;
+    private int flowerTerrainLocation;
+    private int pathTerrainLocation;
+    private int blendMapLocation;
 
     public TerrainShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -33,6 +38,12 @@ public class TerrainShader extends ShaderProgram {
         shineDamperLocation = super.getUniformLocation("shineDamper");
         reflectivityLocation = super.getUniformLocation("reflectivity");
         skyColorLocation = super.getUniformLocation("skyColor");
+
+        grassTerrainLocation = super.getUniformLocation("terrainTexture");
+        mudTerrainLocation = super.getUniformLocation("terrainTexture2");
+        flowerTerrainLocation = super.getUniformLocation("terrainTexture3");
+        pathTerrainLocation = super.getUniformLocation("terrainTexture4");
+        blendMapLocation = super.getUniformLocation("blendMap");
     }
 
     @Override
@@ -40,6 +51,15 @@ public class TerrainShader extends ShaderProgram {
         super.bindAttribute(0, "position");
         super.bindAttribute(1, "textureCoords");
         super.bindAttribute(2, "normal");
+    }
+
+    public void connectTextureUnits() {
+        // texture          //GL13.GL_TEXTURE
+        super.loadIntToUniform(grassTerrainLocation, 0);
+        super.loadIntToUniform(mudTerrainLocation, 1);
+        super.loadIntToUniform(flowerTerrainLocation, 2);
+        super.loadIntToUniform(pathTerrainLocation, 3);
+        super.loadIntToUniform(blendMapLocation, 4);
     }
 
     public void loadSkyColor(Vector3f rgb) {

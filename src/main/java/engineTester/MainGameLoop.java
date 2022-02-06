@@ -13,6 +13,8 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import terrain.Terrain;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 import textures.Texture;
 
 import java.util.ArrayList;
@@ -101,10 +103,19 @@ public class MainGameLoop {
         }
 
         // terrain
-        Terrain terrain = new Terrain(0, 0, loader, new Texture(loader.loadTexture("grass.png")));
-        Terrain terrain2 = new Terrain(0, -1, loader, new Texture(loader.loadTexture("grass.png")));
-        Terrain terrain3 = new Terrain(-1, 0, loader, new Texture(loader.loadTexture("grass.png")));
-        Terrain terrain4 = new Terrain(-1, -1, loader, new Texture(loader.loadTexture("grass.png")));
+
+        TerrainTexture grass = new TerrainTexture(loader.loadTexture("terrain/grass.png"));
+        TerrainTexture mud = new TerrainTexture(loader.loadTexture("terrain/mud.png"));
+        TerrainTexture flower = new TerrainTexture(loader.loadTexture("terrain/grassFlowers.png"));
+        TerrainTexture path = new TerrainTexture(loader.loadTexture("terrain/path.png"));
+
+        TerrainTexturePack texturePack = new TerrainTexturePack(grass, mud, flower, path);
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("terrain/blendMap.png"));
+
+        Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap);
+        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
+        Terrain terrain3 = new Terrain(-1, 0, loader, texturePack, blendMap);
+        Terrain terrain4 = new Terrain(-1, -1, loader, texturePack, blendMap);
 
         // light source
         Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));

@@ -32,10 +32,8 @@ void main(){
     vec4 positionRelativeToCamera = viewMatrix * worldPosition;
 
     gl_Position = projectionMatrix * positionRelativeToCamera;
-    // Stretches the texture and looks bad
-    //pass_textureCoords = textureCoords;
-    // Tiles the texture in the model
-    pass_textureCoords = textureCoords * 40.0;
+
+    pass_textureCoords = textureCoords;
 
     surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
     toLightVector = lightPosition - worldPosition.xyz;

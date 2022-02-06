@@ -2,7 +2,8 @@ package terrain;
 
 import models.RawModel;
 import renderEngine.Loader;
-import textures.Texture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 
 // A terrain tile
 public class Terrain {
@@ -13,12 +14,14 @@ public class Terrain {
     private float x;
     private float z;
     private RawModel model;
-    private Texture texture;
+    private TerrainTexturePack texturePack;
+    private TerrainTexture blendMap;
 
-    public Terrain(float gridX, float gridZ, Loader loader, Texture texture) {
+    public Terrain(float gridX, float gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap) {
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.texture = texture;
+        this.blendMap = blendMap;
+        this.texturePack = texturePack;
         this.model = generateTerrain(loader);
     }
 
@@ -34,8 +37,12 @@ public class Terrain {
         return model;
     }
 
-    public Texture getTexture() {
-        return texture;
+    public TerrainTexturePack getTexturePack() {
+        return texturePack;
+    }
+
+    public TerrainTexture getBlendMap() {
+        return blendMap;
     }
 
     // Terrain is usually simple and repetitive so generating the model in code works.
