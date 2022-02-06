@@ -3,6 +3,7 @@ package engineTester;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.RawModel;
 import models.TexturedModel;
 import objLoader.ModelData;
@@ -21,6 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainGameLoop {
+
+    private static final int FPS_CAP = 120;
+
+    private static long lastFrameTime;
+    private static float delta;
 
     public static void main(String[] args) {
 
@@ -124,9 +130,20 @@ public class MainGameLoop {
 
         MasterRenderer renderer = new MasterRenderer();
 
+        Player player = new Player(textureTreeModel, new Vector3f(0, 0, -20), 0, 0, 0, 2, DisplayManager.getWindow());
+
+        lastFrameTime = getCurrentTime();
 
         while (!DisplayManager.isCloseRequested()) {
+
+            long currentFrameTime = getCurrentTime();
+            delta = (currentFrameTime - lastFrameTime) / 1000f; // in seconds
+            lastFrameTime = currentFrameTime;
+
             camera.move();
+            player.move(delta);
+            //
+            renderer.processEntity(player);
             //
             renderer.processTerrain(terrain);
             renderer.processTerrain(terrain2);
@@ -145,5 +162,9 @@ public class MainGameLoop {
         renderer.cleanup();
         loader.cleanUp();
         DisplayManager.destroyDisplay();
+    }
+
+    private static long getCurrentTime() {
+        return System.currentTimeMillis();
     }
 }

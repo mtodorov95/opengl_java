@@ -1,20 +1,17 @@
 package renderEngine;
+
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
-import java.nio.IntBuffer;
-
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DisplayManager {
 
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
-    private static final int FPS_CAP = 120;
 
     private static long window;
     private static int width, height;
@@ -27,13 +24,13 @@ public class DisplayManager {
         return height;
     }
 
-    public static void createDisplay(){
+    public static void createDisplay() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if ( !glfwInit() )
+        if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
 
         // Configure our window
@@ -48,12 +45,12 @@ public class DisplayManager {
 
         // Create the window
         window = glfwCreateWindow(WIDTH, HEIGHT, "Game", NULL, NULL);
-        if ( window == NULL )
+        if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                 glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
         });
 
@@ -81,11 +78,15 @@ public class DisplayManager {
         return window;
     }
 
-    public static boolean isCloseRequested(){
+    public static boolean isKeyPressed(int keycode) {
+        return glfwGetKey(window, keycode) == GLFW.GLFW_PRESS;
+    }
+
+    public static boolean isCloseRequested() {
         return glfwWindowShouldClose(window);
     }
 
-    public static void updateDisplay(){
+    public static void updateDisplay() {
         // swap the buffers
         glfwSwapBuffers(window);
         // Poll for window events. The key callback above will only be
@@ -93,7 +94,7 @@ public class DisplayManager {
         glfwPollEvents();
     }
 
-    public static void destroyDisplay(){
+    public static void destroyDisplay() {
         // Terminate GLFW and free the error callback
         cleanUp();
         glfwTerminate();
