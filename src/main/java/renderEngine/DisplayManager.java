@@ -1,5 +1,6 @@
 package renderEngine;
 
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -15,6 +16,8 @@ public class DisplayManager {
 
     private static long window;
     private static int width, height;
+
+    private static double xPos, yPos, lastX, lastY, xOffset, yOffset;
 
     public static int getWidth() {
         return width;
@@ -54,6 +57,23 @@ public class DisplayManager {
                 glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
         });
 
+        glfwSetMouseButtonCallback(window, (window, key, action, mods) -> {
+            //
+        });
+
+        glfwSetCursorPosCallback(window, (window, xPos, yPos) -> {
+            lastX = DisplayManager.xPos;
+            lastY = DisplayManager.yPos;
+
+            DisplayManager.xPos = xPos;
+            DisplayManager.yPos = yPos;
+        });
+
+        glfwSetScrollCallback(window, (window, xOffset, yOffset) -> {
+            DisplayManager.xOffset = xOffset;
+            DisplayManager.yOffset = yOffset;
+        });
+
         // Get the resolution of the primary monitor
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         // Center our window
@@ -82,6 +102,22 @@ public class DisplayManager {
         return glfwGetKey(window, keycode) == GLFW.GLFW_PRESS;
     }
 
+    public static float getDy() {
+        return (float) (lastY - yPos);
+    }
+
+    public static float getDx() {
+        return (float) (lastX - xPos);
+    }
+
+    public static Vector2f getScrollOffset() {
+        return new Vector2f((float) xOffset, (float) yOffset);
+    }
+
+    public static boolean isMouseButtonPressed(int keycode) {
+        return glfwGetMouseButton(window, keycode) == GLFW_PRESS;
+    }
+
     public static boolean isCloseRequested() {
         return glfwWindowShouldClose(window);
     }
@@ -89,9 +125,13 @@ public class DisplayManager {
     public static void updateDisplay() {
         // swap the buffers
         glfwSwapBuffers(window);
-        // Poll for window events. The key callback above will only be
-        // invoked during this call.
-        glfwPollEvents();
+    }
+
+    public static void endFrame() {
+        xOffset = 0;
+        yOffset = 0;
+        lastX = xPos;
+        lastY = yPos;
     }
 
     public static void destroyDisplay() {

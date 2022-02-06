@@ -21,6 +21,8 @@ import textures.Texture;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+
 public class MainGameLoop {
 
     private static final int FPS_CAP = 120;
@@ -126,15 +128,18 @@ public class MainGameLoop {
         // light source
         Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
 
-        Camera camera = new Camera(DisplayManager.getWindow());
-
         MasterRenderer renderer = new MasterRenderer();
 
         Player player = new Player(textureTreeModel, new Vector3f(0, 0, -20), 0, 0, 0, 2, DisplayManager.getWindow());
 
+        Camera camera = new Camera(player);
+
         lastFrameTime = getCurrentTime();
 
         while (!DisplayManager.isCloseRequested()) {
+            // Poll for window events. The key callback above will only be
+            // invoked during this call.
+            glfwPollEvents();
 
             long currentFrameTime = getCurrentTime();
             delta = (currentFrameTime - lastFrameTime) / 1000f; // in seconds
@@ -157,6 +162,7 @@ public class MainGameLoop {
             //
             renderer.render(light, camera);
             DisplayManager.updateDisplay();
+            DisplayManager.endFrame();
         }
 
         renderer.cleanup();
