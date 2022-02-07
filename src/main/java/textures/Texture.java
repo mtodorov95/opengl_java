@@ -10,6 +10,8 @@ public class Texture {
     private boolean hasTransparency = false;
     private boolean useFakeLighting = false;
 
+    private int numberOfRows = 1;
+
     public Texture(int textureID) {
         this.textureID = textureID;
     }
@@ -20,6 +22,19 @@ public class Texture {
 
     public void setUseFakeLighting(boolean useFakeLighting) {
         this.useFakeLighting = useFakeLighting;
+    }
+
+    public int getNumberOfRows() {
+        return numberOfRows;
+    }
+
+    /**
+     * Used for texture atlases. Value is 1 for single textures.
+     *
+     * @param numberOfRows
+     */
+    public void setNumberOfRows(int numberOfRows) {
+        this.numberOfRows = numberOfRows;
     }
 
     public boolean isHasTransparency() {

@@ -20,6 +20,7 @@ import textures.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 
@@ -60,7 +61,12 @@ public class MainGameLoop {
         // Fern
         data = OBJFileLoader.loadOBJ("fern/fern");
         RawModel fernModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
-        Texture fernTexture = new Texture(loader.loadTexture("fern/fern.png"));
+        // Single
+        // Texture fernTexture = new Texture(loader.loadTexture("fern/fern.png"));
+        // Atlas
+        Texture fernTexture = new Texture(loader.loadTexture("fern/fernAtl.png"));
+        fernTexture.setNumberOfRows(2);
+
         fernTexture.setHasTransparency(true);
         stallTexture.setShineDamper(10);
         stallTexture.setReflectivity(0.001f);
@@ -107,6 +113,8 @@ public class MainGameLoop {
         entities.add(stall2);
         entities.add(stall3);
 
+        Random random = new Random(323453452);
+
         for (int i = 0; i < 60; i++) {
             float min = -400;
             float x = (float) (Math.random() * 800) + min;
@@ -133,7 +141,9 @@ public class MainGameLoop {
                     y = height;
                 }
             }
-            Entity fern = new Entity(textureFernModel, new Vector3f(x, y, z), 0, 0, 0, 1);
+            // Pre atlas
+            // Entity fern = new Entity(textureFernModel, new Vector3f(x, y, z), 0, 0, 0, 1);
+            Entity fern = new Entity(textureFernModel, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1);
             entities.add(fern);
         }
 

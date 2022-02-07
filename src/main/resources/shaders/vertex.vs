@@ -23,6 +23,10 @@ uniform vec3 lightPosition;
 
 uniform float useFakeLighting;
 
+// Texture atlases
+uniform float numberOfRows;
+uniform vec2 offset;
+
 // Fog
 const float density = 0.003;
 const float gradient = 5.0;
@@ -34,7 +38,8 @@ void main(){
     vec4 positionRelativeToCamera = viewMatrix * worldPosition;
 
     gl_Position = projectionMatrix * positionRelativeToCamera;
-    pass_textureCoords = textureCoords;
+    // Scale down the coords by the rows in the atlas and go to the correct one.
+    pass_textureCoords = (textureCoords / numberOfRows) + offset;
 
     // if we are faking lighting point the normal vec straight up
     vec3 actualNormal = normal;

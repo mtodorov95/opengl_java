@@ -53,6 +53,8 @@ public class EntityRenderer {
         GL20.glEnableVertexAttribArray(2);
         // Load the shine for the texture
         Texture texture = model.getTexture();
+        // Same atlas for all instances
+        shader.loadNumberOfRows(texture.getNumberOfRows());
         // Disable culling for textures with transparency
         if (texture.isHasTransparency()) {
             MasterRenderer.disableCulling();
@@ -74,7 +76,9 @@ public class EntityRenderer {
                 entity.getRotZ(),
                 entity.getScale()
         );
+        // Individual for every instance
         shader.loadTransformationMatrix(transformationMatrix);
+        shader.loadTextureOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
     }
 
     private void unbindTexturedModel() {

@@ -3,6 +3,7 @@ package shaders;
 import entities.Camera;
 import entities.Light;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import tools.Maths;
 
@@ -19,6 +20,8 @@ public class StaticShader extends ShaderProgram {
     private int reflectivityLocation;
     private int useFakeLightingLocation;
     private int skyColorLocation;
+    private int offsetLocation;
+    private int numberOfRowsLocation;
 
     public StaticShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -35,6 +38,8 @@ public class StaticShader extends ShaderProgram {
         reflectivityLocation = super.getUniformLocation("reflectivity");
         useFakeLightingLocation = super.getUniformLocation("useFakeLighting");
         skyColorLocation = super.getUniformLocation("skyColor");
+        offsetLocation = super.getUniformLocation("offset");
+        numberOfRowsLocation = super.getUniformLocation("numberOfRows");
     }
 
     @Override
@@ -50,6 +55,14 @@ public class StaticShader extends ShaderProgram {
 
     public void loadFakeLightingVar(boolean useFake) {
         super.loadBooleanToUniform(useFakeLightingLocation, useFake);
+    }
+
+    public void loadNumberOfRows(int numberOfRows) {
+        super.loadFloatToUniform(numberOfRowsLocation, numberOfRows);
+    }
+
+    public void loadTextureOffset(float x, float y) {
+        super.loadVectorToUniform(offsetLocation, new Vector2f(x, y));
     }
 
     public void loadShineVariables(float damper, float reflectivity) {
