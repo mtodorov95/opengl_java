@@ -120,10 +120,10 @@ public class MainGameLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(grass, mud, flower, path);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("terrain/blendMap.png"));
 
-        Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap);
-        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
-        Terrain terrain3 = new Terrain(-1, 0, loader, texturePack, blendMap);
-        Terrain terrain4 = new Terrain(-1, -1, loader, texturePack, blendMap);
+        Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap, "terrain/heightmap.png");
+        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "terrain/heightmap.png");
+        Terrain terrain3 = new Terrain(-1, 0, loader, texturePack, blendMap, "terrain/heightmap.png");
+        Terrain terrain4 = new Terrain(-1, -1, loader, texturePack, blendMap, "terrain/heightmap.png");
 
         // light source
         Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
