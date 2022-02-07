@@ -75,6 +75,27 @@ public class MainGameLoop {
         stallTexture.setReflectivity(0.001f);
         TexturedModel textureGrassModel = new TexturedModel(grassModel, grassTexture);
 
+        // terrain
+
+        TerrainTexture grassTex = new TerrainTexture(loader.loadTexture("terrain/grass.png"));
+        TerrainTexture mud = new TerrainTexture(loader.loadTexture("terrain/mud.png"));
+        TerrainTexture flower = new TerrainTexture(loader.loadTexture("terrain/grassFlowers.png"));
+        TerrainTexture path = new TerrainTexture(loader.loadTexture("terrain/path.png"));
+
+        TerrainTexturePack texturePack = new TerrainTexturePack(grassTex, mud, flower, path);
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("terrain/blendMap.png"));
+
+        Terrain terrain1 = new Terrain(0, 0, loader, texturePack, blendMap, "terrain/heightmap.png");
+        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "terrain/heightmap.png");
+        Terrain terrain3 = new Terrain(-1, 0, loader, texturePack, blendMap, "terrain/heightmap.png");
+        Terrain terrain4 = new Terrain(-1, -1, loader, texturePack, blendMap, "terrain/heightmap.png");
+
+        List<Terrain> terrains = new ArrayList<>();
+        terrains.add(terrain1);
+        terrains.add(terrain2);
+        terrains.add(terrain3);
+        terrains.add(terrain4);
+
         // entities
         List<Entity> entities = new ArrayList<>();
 
@@ -90,7 +111,14 @@ public class MainGameLoop {
             float min = -400;
             float x = (float) (Math.random() * 800) + min;
             float z = (float) (Math.random() * 800) + min;
-            Entity tree = new Entity(textureTreeModel, new Vector3f(x, 0, z), 0, 0, 0, 10);
+            float y = 0;
+            for (Terrain terrain : terrains) {
+                float height = terrain.getHeightAtXZ(x, z);
+                if (height != 0) {
+                    y = height;
+                }
+            }
+            Entity tree = new Entity(textureTreeModel, new Vector3f(x, y, z), 0, 0, 0, 10);
             entities.add(tree);
         }
 
@@ -98,7 +126,14 @@ public class MainGameLoop {
             float min = -400;
             float x = (float) (Math.random() * 800) + min;
             float z = (float) (Math.random() * 800) + min;
-            Entity fern = new Entity(textureFernModel, new Vector3f(x, 0, z), 0, 0, 0, 1);
+            float y = 0;
+            for (Terrain terrain : terrains) {
+                float height = terrain.getHeightAtXZ(x, z);
+                if (height != 0) {
+                    y = height;
+                }
+            }
+            Entity fern = new Entity(textureFernModel, new Vector3f(x, y, z), 0, 0, 0, 1);
             entities.add(fern);
         }
 
@@ -106,31 +141,23 @@ public class MainGameLoop {
             float min = -400;
             float x = (float) (Math.random() * 800) + min;
             float z = (float) (Math.random() * 800) + min;
-            Entity grass = new Entity(textureGrassModel, new Vector3f(x, 0, z), 0, 0, 0, 1);
+            float y = 0;
+            for (Terrain terrain : terrains) {
+                float height = terrain.getHeightAtXZ(x, z);
+                if (height != 0) {
+                    y = height;
+                }
+            }
+            Entity grass = new Entity(textureGrassModel, new Vector3f(x, y, z), 0, 0, 0, 1);
             entities.add(grass);
         }
-
-        // terrain
-
-        TerrainTexture grass = new TerrainTexture(loader.loadTexture("terrain/grass.png"));
-        TerrainTexture mud = new TerrainTexture(loader.loadTexture("terrain/mud.png"));
-        TerrainTexture flower = new TerrainTexture(loader.loadTexture("terrain/grassFlowers.png"));
-        TerrainTexture path = new TerrainTexture(loader.loadTexture("terrain/path.png"));
-
-        TerrainTexturePack texturePack = new TerrainTexturePack(grass, mud, flower, path);
-        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("terrain/blendMap.png"));
-
-        Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap, "terrain/heightmap.png");
-        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "terrain/heightmap.png");
-        Terrain terrain3 = new Terrain(-1, 0, loader, texturePack, blendMap, "terrain/heightmap.png");
-        Terrain terrain4 = new Terrain(-1, -1, loader, texturePack, blendMap, "terrain/heightmap.png");
 
         // light source
         Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
 
         MasterRenderer renderer = new MasterRenderer();
 
-        Player player = new Player(textureTreeModel, new Vector3f(0, 0, -20), 0, 0, 0, 2, DisplayManager.getWindow());
+        Player player = new Player(textureTreeModel, new Vector3f(50, 0, 100), 0, 0, 0, 2, DisplayManager.getWindow());
 
         Camera camera = new Camera(player);
 
@@ -150,10 +177,12 @@ public class MainGameLoop {
             //
             renderer.processEntity(player);
             //
-            renderer.processTerrain(terrain);
-            renderer.processTerrain(terrain2);
-            renderer.processTerrain(terrain3);
-            renderer.processTerrain(terrain4);
+            for (Terrain terrain : terrains) {
+                renderer.processTerrain(terrain);
+                if (terrain.getHeightAtXZ(player.getPosition().x, player.getPosition().z) != 0) {
+                    player.checkTerrainCollision(terrain);
+                }
+            }
             //
             // Process all the entities
             for (Entity entity : entities) {
