@@ -2,10 +2,7 @@ package renderEngine;
 
 import models.RawModel;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
@@ -63,7 +60,13 @@ public class Loader {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
             GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
             GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, byteBuffer);
+            // Mipmaps
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+            // Transition smoothly between resolutions when using mipmaps a.k.a. objects are distant
+            // and can be rendered at lower res.
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+            // Level of detail. Less noticeable mipmapping. The more negative the number the higher the detail.
+            GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.5f);
             STBImage.stbi_image_free(byteBuffer);
             return id;
         } catch (Exception e) {

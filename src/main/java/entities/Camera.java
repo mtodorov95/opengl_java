@@ -7,8 +7,8 @@ import renderEngine.DisplayManager;
 public class Camera {
 
     private Vector3f position = new Vector3f(0, 10, 0);
-    private float pitch; // rotation
-    private float yaw; // left/right ?
+    private float pitch; // angle between camera and ground
+    private float yaw; // horizontal angle
     private float roll; // tilt
 
     private float distanceFromPlayer = 50;
