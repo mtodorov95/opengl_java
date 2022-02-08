@@ -165,8 +165,13 @@ public class MainGameLoop {
             entities.add(grass);
         }
 
-        // light source
-        Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
+        // lights
+        List<Light> lights = new ArrayList<>();
+        Light sun = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
+        Light secondSun = new Light(new Vector3f(1500, 2500, 1800), new Vector3f(5, 0, 0));
+
+        lights.add(sun);
+        lights.add(secondSun);
 
         MasterRenderer renderer = new MasterRenderer();
 
@@ -209,7 +214,7 @@ public class MainGameLoop {
                 renderer.processEntity(entity);
             }
             //
-            renderer.render(light, camera);
+            renderer.render(lights, camera);
             // GUI
             guiRenderer.render(guis);
             //
