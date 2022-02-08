@@ -4,10 +4,13 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import guis.GUIRenderer;
+import guis.GUITexture;
 import models.RawModel;
 import models.TexturedModel;
 import objLoader.ModelData;
 import objLoader.OBJFileLoader;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import renderEngine.DisplayManager;
@@ -171,6 +174,13 @@ public class MainGameLoop {
 
         Camera camera = new Camera(player);
 
+        // GUI
+        List<GUITexture> guis = new ArrayList<>();
+        GUITexture gui = new GUITexture(loader.loadTexture("gui/gamepad.png"), new Vector2f(0.8f, 0.9f), new Vector2f(0.1f, 0.1f));
+        guis.add(gui);
+
+        GUIRenderer guiRenderer = new GUIRenderer(loader);
+
         lastFrameTime = getCurrentTime();
 
         while (!DisplayManager.isCloseRequested()) {
@@ -200,10 +210,14 @@ public class MainGameLoop {
             }
             //
             renderer.render(light, camera);
+            // GUI
+            guiRenderer.render(guis);
+            //
             DisplayManager.updateDisplay();
             DisplayManager.endFrame();
         }
 
+        guiRenderer.cleanup();
         renderer.cleanup();
         loader.cleanUp();
         DisplayManager.destroyDisplay();
