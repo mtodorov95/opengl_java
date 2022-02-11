@@ -12,6 +12,7 @@ out vec4 fragColor;
 uniform sampler2D textureSampler;
 //uniform vec3 lightColor;
 uniform vec3 lightColor[4];
+uniform vec3 attenuation[4];
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
@@ -25,6 +26,9 @@ void main(){
     vec3 totalSpecular = vec3(0.0);
 
     for (int i=0;i<4;i++){
+        float distance = length(toLightVector[i]);
+        float attFactor = attenuation[i].x + (attenuation[i].y * distance) + (attenuation[i].z * distance * distance);
+        //
         vec3 unitLightVector = normalize(toLightVector[i]);
         // Used to calc how similar the direction of the two vectors is.
         // The more similar(closer to 1.0) the closer the vertex is to the light source
@@ -42,9 +46,9 @@ void main(){
         // how much to damp the reflected light
         float dampedFactor = pow(specularFactor, shineDamper);
         // how much light depending on brightness
-        totalDiffuse = totalDiffuse + brightness * lightColor[i];
+        totalDiffuse = totalDiffuse + (brightness * lightColor[i]) / attFactor;
         // The final specular(reflected) light, taking the color of the light source into account
-        totalSpecular = totalSpecular + dampedFactor * reflectivity * lightColor[i];
+        totalSpecular = totalSpecular + (dampedFactor * reflectivity * lightColor[i]) / attFactor;
     }
     // Ambient
     totalDiffuse = max(totalDiffuse, 0.15);

@@ -58,8 +58,6 @@ public class MainGameLoop {
         data = OBJFileLoader.loadOBJ("tree/tree");
         RawModel treeModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
         Texture treeTexture = new Texture(loader.loadTexture("tree/tree.png"));
-        stallTexture.setShineDamper(10);
-        stallTexture.setReflectivity(0.001f);
         TexturedModel textureTreeModel = new TexturedModel(treeModel, treeTexture);
         // Fern
         data = OBJFileLoader.loadOBJ("fern/fern");
@@ -164,14 +162,24 @@ public class MainGameLoop {
             Entity grass = new Entity(textureGrassModel, new Vector3f(x, y, z), 0, 0, 0, 1);
             entities.add(grass);
         }
+        // lamps
+        // Trees
+        data = OBJFileLoader.loadOBJ("lamp/lamp");
+        RawModel lampModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
+        Texture lampTexture = new Texture(loader.loadTexture("lamp/lamp.png"));
+        TexturedModel texturedLampModel = new TexturedModel(lampModel, lampTexture);
+        entities.add(new Entity(texturedLampModel, new Vector3f(185, 0, -200), 0, 0, 0, 1));
+        entities.add(new Entity(texturedLampModel, new Vector3f(55, 0, -50), 0, 0, 0, 1));
+        entities.add(new Entity(texturedLampModel, new Vector3f(300, 0, -170), 0, 0, 0, 1));
 
         // lights
         List<Light> lights = new ArrayList<>();
-        Light sun = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
-        Light secondSun = new Light(new Vector3f(1500, 2500, 1800), new Vector3f(5, 0, 0));
-
+        Light sun = new Light(new Vector3f(0, 1000, -7000), new Vector3f(0.4f, 0.4f, 0.4f));
         lights.add(sun);
-        lights.add(secondSun);
+        lights.add(new Light(new Vector3f(185, 15, -200), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+        lights.add(new Light(new Vector3f(55, 15, -50), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
+        lights.add(new Light(new Vector3f(300, 15, -170), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+
 
         MasterRenderer renderer = new MasterRenderer();
 

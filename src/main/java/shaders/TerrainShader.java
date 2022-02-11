@@ -29,6 +29,7 @@ public class TerrainShader extends ShaderProgram {
     private int flowerTerrainLocation;
     private int pathTerrainLocation;
     private int blendMapLocation;
+    private int attenuationLocation[];
 
     public TerrainShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -53,9 +54,11 @@ public class TerrainShader extends ShaderProgram {
         //
         lightPositionLocation = new int[MAX_LIGHTS];
         lightColorLocation = new int[MAX_LIGHTS];
+        attenuationLocation = new int[MAX_LIGHTS];
         for (int i = 0; i < MAX_LIGHTS; i++) {
             lightPositionLocation[i] = super.getUniformLocation("lightPosition[" + i + "]");
             lightColorLocation[i] = super.getUniformLocation("lightColor[" + i + "]");
+            attenuationLocation[i] = super.getUniformLocation("attenuation[" + i + "]");
         }
     }
 
@@ -94,11 +97,13 @@ public class TerrainShader extends ShaderProgram {
             if (i < lights.size()) {
                 super.loadVectorToUniform(lightPositionLocation[i], lights.get(i).getPosition());
                 super.loadVectorToUniform(lightColorLocation[i], lights.get(i).getColor());
+                super.loadVectorToUniform(attenuationLocation[i], lights.get(i).getAttenuation());
             } else {
                 // if there are less than max lights
                 // fill with empty
                 super.loadVectorToUniform(lightPositionLocation[i], new Vector3f(0, 0, 0));
                 super.loadVectorToUniform(lightColorLocation[i], new Vector3f(0, 0, 0));
+                super.loadVectorToUniform(attenuationLocation[i], new Vector3f(1, 0, 0));
             }
         }
     }
