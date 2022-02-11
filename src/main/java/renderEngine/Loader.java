@@ -5,6 +5,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import textures.TextureData;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -32,11 +33,11 @@ public class Loader {
     }
 
     // for guis
-    public RawModel loadToVAO(float[] positions) {
+    public RawModel loadToVAO(float[] positions, int dimensions) {
         int vaoID = createVAO();
-        storeDataInAttributeList(0, 2, positions);
+        storeDataInAttributeList(0, dimensions, positions);
         unbindVAO();
-        return new RawModel(vaoID, positions.length / 2);
+        return new RawModel(vaoID, positions.length / dimensions);
     }
 
     private int createVAO() {
@@ -81,6 +82,49 @@ public class Loader {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    /**
+     * @param textureFiles - Order: Right>Left>Top>Bottom>Back>Front
+     * @return
+     */
+    public int loadCubeMap(String[] textureFiles) {
+        int texID = GL11.glGenTextures();
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
+        for (int i = 0; i < textureFiles.length; i++) {
+            TextureData data = decodeTextureFile(textureFiles[i]);
+            GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(),
+                    data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
+        }
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        textures.add(texID);
+        return texID;
+    }
+
+    private TextureData decodeTextureFile(String filename) {
+        int width = 0;
+        int height = 0;
+        ByteBuffer buffer = null;
+        try {
+            MemoryStack stack = MemoryStack.stackPush();
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            IntBuffer c = stack.mallocInt(1);
+
+            String fullPath = "src/main/resources/res/" + filename;
+            buffer = STBImage.stbi_load(fullPath, w, h, c, 4);
+            if (buffer == null) {
+                throw new Exception("Unable to load file: " + fullPath);
+            }
+            width = w.get();
+            height = h.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new TextureData(width, height, buffer);
     }
 
     private void storeDataInAttributeList(int attributeNumber, int coordinatesSize, float[] data) {

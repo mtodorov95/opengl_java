@@ -181,7 +181,7 @@ public class MainGameLoop {
         lights.add(new Light(new Vector3f(300, 15, -170), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
 
 
-        MasterRenderer renderer = new MasterRenderer();
+        MasterRenderer renderer = new MasterRenderer(loader);
 
         Player player = new Player(textureTreeModel, new Vector3f(50, 0, 100), 0, 0, 0, 2, DisplayManager.getWindow());
 

@@ -9,6 +9,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import shaders.StaticShader;
 import shaders.TerrainShader;
+import skybox.SkyBoxRenderer;
 import terrain.Terrain;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class MasterRenderer {
     private TerrainShader terrainShader;
     private EntityRenderer entityRenderer;
     private TerrainRenderer terrainRenderer;
+    private SkyBoxRenderer skyBoxRenderer;
 
     // hash the textures and reuse them instead of binding, loading and unbinding the same
     // data for N-number of entities
@@ -37,13 +39,14 @@ public class MasterRenderer {
 
     private List<Terrain> terrains = new ArrayList<>();
 
-    public MasterRenderer() {
+    public MasterRenderer(Loader loader) {
         enableBackFaceCulling();
         createProjectionMatrix();
         staticShader = new StaticShader();
         terrainShader = new TerrainShader();
         entityRenderer = new EntityRenderer(staticShader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+        skyBoxRenderer = new SkyBoxRenderer(loader, projectionMatrix);
     }
 
     public static void enableBackFaceCulling() {
@@ -74,6 +77,8 @@ public class MasterRenderer {
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();
+        //
+        skyBoxRenderer.render(camera);
         //
         entities.clear();
         terrains.clear();
